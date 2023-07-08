@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "166675049971",
+    "project_id": "expoauth-81e01",
+    "storage_bucket": "expoauth-81e01.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:166675049971:android:bb1c0432467d8f2b957686",
+        "android_client_info": {
+          "package_name": "com.polo_ff.message"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "166675049971-1d3j38o8bbm5t72a2glih5rb854c5gcb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.polo_ff.message",
+            "certificate_hash": "3987b59adbedd03c2e230a4321e84a76f8a18e7b"
+          }
+        },
+        {
+          "client_id": "166675049971-2ko4svqmpoj5pifc4h3mf5iqgbioi6k6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.polo_ff.message",
+            "certificate_hash": "b064c79e69bb843655497d0bc031c16d7f69f826"
+          }
+        },
+        {
+          "client_id": "166675049971-b3tlbtmj3m3sr200opglf9bsflgb63qf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC0CSry8i_BVvUvuD7g7mMhwX_ORiMbBOs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "166675049971-b3tlbtmj3m3sr200opglf9bsflgb63qf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

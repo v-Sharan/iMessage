@@ -8,11 +8,7 @@ import { Redirect } from "expo-router";
 
 const index = () => {
   const { width } = useWindowDimensions();
-  const { handleLogin, user } = useAuth();
-
-  if (user) {
-    return <Redirect href={"/"} />;
-  }
+  const { handleLogin } = useAuth();
 
   return (
     <SafeAreaView

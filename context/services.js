@@ -1,9 +1,9 @@
 import { Alert } from "react-native";
 
-const API_URL = "http://192.168.196.177:8080";
+const API_URL = "https://imessage-t8ig.onrender.com";
 
 export const login = async (user) => {
-  if (!user.email && !user.photoURL && !user.displayName) {
+  if (!user?.email && !user?.photoURL && !user?.displayName) {
     return;
   }
 
@@ -25,11 +25,10 @@ export const login = async (user) => {
   }
 
   const data = await res.json();
-  Alert.alert(data.message);
   return data;
 };
 
 export const getUsers = async () => {
-  const res = await fetch(`${API_URL}/users`);
+  const res = await fetch(`${API_URL}/user`);
   return res.json();
 };

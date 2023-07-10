@@ -1,5 +1,6 @@
-import { router } from "expo-router";
+import { useRouter, useNavigation } from "expo-router";
 import React, { useState, useEffect } from "react";
+import { ActivityIndicator } from "react-native";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import auth from "@react-native-firebase/auth";
 import { login } from "./services";
@@ -21,23 +22,52 @@ export function Provider(props) {
     webClientId:
       "166675049971-b3tlbtmj3m3sr200opglf9bsflgb63qf.apps.googleusercontent.com",
   });
-  const [dataBaseUser, setDataBaseUser] = useState(false);
+  const router = useRouter();
+  const [dataBaseUser, setDataBaseUser] = useState(null);
+
+  const rootNavigation = useNavigation();
+  const [isNavigationReady, setNavigationReady] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = rootNavigation?.addListener("state", () =>
+      setNavigationReady(true)
+    );
+    return () => unsubscribe && unsubscribe();
+  }, [rootNavigation]);
 
   const loginUser = async (userData) => {
-    await login(userData);
-    setDataBaseUser(true);
+    const data = await login(userData);
+    setDataBaseUser(data);
   };
 
-  function onAuthStateChanged(user) {
+  async function onAuthStateChanged(user) {
     setUser(user);
-    const data = {
-      email: user?.email,
-      photoURL: user?.photoURL,
-      displayName: user?.displayName,
-    };
-    loginUser(data);
+    if (user) {
+      await loginUser(user);
+    }
     if (initializing) setInitializing(false);
   }
+
+  useEffect(() => {
+    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    return subscriber;
+  }, []);
+
+  useEffect(() => {
+    if (!isNavigationReady) {
+      return;
+    }
+    if (dataBaseUser) {
+      setTimeout(() => {
+        router.push("/chat");
+      }, 1000);
+    } else if (!dataBaseUser) {
+      setTimeout(() => {
+        router.push("/sign-in");
+      }, 1000);
+    }
+  }, [isNavigationReady, dataBaseUser, user]);
+
   const onGoogleButtonPress = async () => {
     await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
     const { idToken } = await GoogleSignin.signIn();
@@ -47,7 +77,6 @@ export function Provider(props) {
     auth()
       .signInWithCredential(googleCredential)
       .then((data) => {
-        loginUser(data.user);
         setUser(data.user);
       })
       .catch((err) => console.log(err));
@@ -55,36 +84,23 @@ export function Provider(props) {
 
   const signOut = async () => {
     try {
+      setDataBaseUser(null);
+      setUser(null);
       await GoogleSignin.revokeAccess();
       await auth().signOut();
-      setDataBaseUser(null);
     } catch (err) {
       console.log(err);
     }
   };
-  useEffect(() => {
-    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
-    return subscriber;
-  }, []);
 
   if (initializing) return null;
-
-  if (user && dataBaseUser) {
-    setTimeout(() => {
-      router.push("/");
-    }, 50);
-  } else if (!user && !dataBaseUser) {
-    setTimeout(() => {
-      router.push("/sign-in");
-    }, 50);
-  }
 
   return (
     <AuthContext.Provider
       value={{
         handleLogout: signOut,
         handleLogin: onGoogleButtonPress,
-        user,
+        user: dataBaseUser,
       }}
     >
       {props.children}

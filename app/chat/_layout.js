@@ -1,37 +1,32 @@
 import { Link, Stack } from "expo-router";
+import { View } from "react-native";
 import { useEffect } from "react";
 import { StreamChat } from "stream-chat";
 import { OverlayProvider, Chat } from "stream-chat-expo";
-// import { useAuth } from "../../src/context/auth";
-import { Entypo } from "@expo/vector-icons";
+import { useAuth } from "../../context/store";
+import { Entypo, MaterialCommunityIcons } from "@expo/vector-icons";
 
 const API_KEY = "jg9gc2gky5t5";
 const client = StreamChat.getInstance(API_KEY);
 
 export default function ChatLayout() {
-  // const { user } = useAuth();
+  const { user, handleLogout } = useAuth();
 
   useEffect(() => {
     const connectUser = async () => {
       await client.connectUser(
         {
-          id: "1234",
-          name: "sharan",
-          image: "https://i.imgur.com/fR9Jz14.png",
+          id: user._id,
+          name: user.name,
+          image: user.userPhoto,
         },
-        client.devToken("1234")
+        user.streamToken
       );
-
-      const channel = client.channel("livestream", "public", {
-        name: "Public",
-      });
-      await channel.create();
     };
-
     connectUser();
 
-    return () => {
-      client.disconnectUser();
+    return async () => {
+      await client.disconnectUser();
     };
   }, []);
 
@@ -44,10 +39,39 @@ export default function ChatLayout() {
             options={{
               title: "Messages",
               headerRight: () => (
-                <Link href="/chat/newChannel">
-                  <Entypo name="new-message" size={18} color="royalblue" />
-                </Link>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    gap: 10,
+                  }}
+                >
+                  <Link href="/chat/newChannel">
+                    <Entypo name="new-message" size={24} color="royalblue" />
+                  </Link>
+                  <MaterialCommunityIcons
+                    onPress={handleLogout}
+                    name="logout"
+                    size={24}
+                    color="black"
+                  />
+                </View>
               ),
+            }}
+          />
+          <Stack.Screen
+            name="newChannel"
+            options={{
+              headerTitleAlign: "center",
+              headerTitle: "Create a chat",
+            }}
+          />
+          <Stack.Screen
+            name="channel/[id]"
+            options={{
+              headerTitle: "Chat",
+              headerTitleAlign: "center",
             }}
           />
         </Stack>

@@ -3,8 +3,8 @@ import { Provider } from "../context/store";
 
 export default () => {
   return (
-    // <Provider>
-    <Slot />
-    // </Provider>
+    <Provider>
+      <Slot />
+    </Provider>
   );
 };

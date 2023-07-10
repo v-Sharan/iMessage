@@ -1,6 +1,5 @@
 import { useRouter, useNavigation } from "expo-router";
 import React, { useState, useEffect } from "react";
-import { ActivityIndicator } from "react-native";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import auth from "@react-native-firebase/auth";
 import { login } from "./services";
@@ -9,6 +8,7 @@ const AuthContext = React.createContext({
   user: null,
   handleLogin: () => {},
   handleLogout: () => {},
+  loading: false,
 });
 
 export function useAuth() {
@@ -24,6 +24,7 @@ export function Provider(props) {
   });
   const router = useRouter();
   const [dataBaseUser, setDataBaseUser] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const rootNavigation = useNavigation();
   const [isNavigationReady, setNavigationReady] = useState(false);
@@ -36,8 +37,10 @@ export function Provider(props) {
   }, [rootNavigation]);
 
   const loginUser = async (userData) => {
+    setLoading(true);
     const data = await login(userData);
     setDataBaseUser(data);
+    setLoading(false);
   };
 
   async function onAuthStateChanged(user) {
@@ -57,6 +60,7 @@ export function Provider(props) {
     if (!isNavigationReady) {
       return;
     }
+    setLoading(true);
     if (dataBaseUser) {
       setTimeout(() => {
         router.push("/chat");
@@ -66,11 +70,13 @@ export function Provider(props) {
         router.push("/sign-in");
       }, 1000);
     }
+    setLoading(false);
   }, [isNavigationReady, dataBaseUser, user]);
 
   const onGoogleButtonPress = async () => {
     await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
     const { idToken } = await GoogleSignin.signIn();
+    setLoading(true);
 
     const googleCredential = auth.GoogleAuthProvider.credential(idToken);
 
@@ -79,7 +85,8 @@ export function Provider(props) {
       .then((data) => {
         setUser(data.user);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.log(err))
+      .finally(() => setLoading(false));
   };
 
   const signOut = async () => {
@@ -101,6 +108,7 @@ export function Provider(props) {
         handleLogout: signOut,
         handleLogin: onGoogleButtonPress,
         user: dataBaseUser,
+        loading,
       }}
     >
       {props.children}

@@ -1,6 +1,6 @@
 import { Alert } from "react-native";
 
-const API_URL = "https://imessage-t8ig.onrender.com";
+const API_URL = "http://192.168.43.65:8080";
 
 export const login = async (user) => {
   if (!user?.email && !user?.photoURL && !user?.displayName) {

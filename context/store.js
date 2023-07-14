@@ -64,11 +64,11 @@ export function Provider(props) {
     if (dataBaseUser) {
       setTimeout(() => {
         router.push("/chat");
-      }, 1000);
+      }, 500);
     } else if (!dataBaseUser) {
       setTimeout(() => {
         router.push("/sign-in");
-      }, 1000);
+      }, 500);
     }
     setLoading(false);
   }, [isNavigationReady, dataBaseUser, user]);
